@@ -1,0 +1,81 @@
+# Faculty Guide
+
+## Teaching Focus
+
+This module uses antimicrobial susceptibility testing (AST) to demonstrate how analytical measurements, interpretive knowledge, decision rules, reporting policies, and information systems interact.
+
+The central distinction is that an AST measurement such as an MIC is not identical to its categorical interpretation or to the information ultimately presented to the clinician.
+
+Keep the discussion centered on **informatics and director-level reasoning** rather than turning the module into a comprehensive review of AST.
+
+## Key Teaching Points
+
+- An MIC is an analytical susceptibility measurement; breakpoints provide criteria used to generate categorical interpretations.
+- A stable MIC can receive a different interpretation when the applicable interpretive criteria change.
+- AST logic may originate from different sources: published standards and microbiologic knowledge, vendor-implemented functionality, or locally governed laboratory and stewardship policies.
+- Expected phenotypes and expert rules can help identify results that require review, but automated logic does not replace microbiology expertise.
+- Selective or cascade reporting means that a result not displayed to the clinician was not necessarily untested.
+- AST information may be transformed by instruments, expert systems, middleware, the LIS, interfaces, reporting logic, and downstream clinical decision support.
+- Configuration changes should be treated as changes to a dependency network rather than isolated edits.
+- Effective decision support depends on workflow fit and governance as well as technical correctness.
+- Antibiograms introduce additional requirements for appropriate population selection, duplicate-isolate handling, aggregation, extraction, and interpretation.
+
+## Common Misconceptions to Surface
+
+### “The MIC is correct, so the report must be correct.”
+
+A correct analytical measurement establishes only one part of the pathway. The categorical interpretation, mappings, expert rules, reporting policies, or downstream representation may still be incorrect.
+
+### “The vendor configured the rule, so the laboratory does not need to govern it.”
+
+Vendor functionality exists within the laboratory's validated clinical workflow. Learners should understand the importance of knowing which rules are active, where they are implemented, and how changes are evaluated locally.
+
+### “The local antibiogram determines the breakpoint.”
+
+An antibiogram summarizes susceptibility patterns in a defined population and can support stewardship and empiric-treatment decisions. It should not be confused with the interpretive criteria applied to an individual isolate's susceptibility measurement.
+
+### “Decision support means an alert.”
+
+Decision support may also include reporting logic, interpretive comments, reflex or protocol-based actions, or guidance embedded in the result workflow. An intervention can be technically correct but ineffective if it reaches the wrong person, appears at the wrong time, or does not support an actionable decision.
+
+### “Every AST discrepancy is an informatics failure.”
+
+Informatics provides a framework for locating and understanding discrepancies. If the information pathway is functioning as designed, the remaining issue may reflect analytical uncertainty, interpretive criteria, or a situation requiring microbiologic and clinical judgment.
+
+## Suggested Discussion Scenario
+
+An AST instrument generates the expected MIC for an organism-antimicrobial combination, but the EHR displays an unexpected categorical interpretation.
+
+Ask learners to work backward from the clinical report:
+
+1. What measurement did the AST system generate?
+2. Where was the categorical interpretation generated, and which breakpoint criteria were used?
+3. Did an expert rule, expected-phenotype rule, or reporting policy affect the result?
+4. Were the organism, antimicrobial, MIC, category, and comments represented and mapped correctly?
+5. Did middleware, the LIS, an interface, or downstream decision support transform what was displayed?
+6. Were there recent breakpoint, software, mapping, or reporting-policy changes?
+7. If every component is functioning as designed, does the discrepancy require an informatics correction or microbiologic and clinical judgment?
+
+Use the scenario to reinforce that troubleshooting should identify **which layer is responsible before deciding what needs to be corrected**.
+
+## Optional Extension
+
+Ask learners to imagine that the laboratory is implementing updated breakpoints.
+
+Rather than asking only, “Did we update the breakpoint?”, ask them to identify the **dependency network** that may need evaluation:
+
+**AST configuration → expert rules → mappings → reporting logic → LIS/interface → downstream decision support**
+
+Discuss how the laboratory could verify the affected pathway end to end.
+
+## Faculty Emphasis
+
+Learners do not need to memorize specific breakpoint values.
+
+They should leave the module able to reason about **where an AST interpretation came from, what systems or rules acted on it, who governs those rules, and whether the information reaching the clinician still represents the laboratory's intended result**.
+
+Avoid reproducing proprietary breakpoint tables or detailed copyrighted standards content. When specific current criteria are needed, consult the current applicable authoritative standard.
+
+The durable troubleshooting framework is:
+
+> **Measurement → interpretation → rules → representation → reporting**
