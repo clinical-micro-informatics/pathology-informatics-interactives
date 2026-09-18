@@ -1,0 +1,323 @@
+# Foundations of Clinical Microbiology Informatics
+
+## Why Informatics Matters in Microbiology
+
+Clinical microbiology produces information that must move through multiple people, instruments, software systems, and clinical workflows before it can influence patient care.
+
+A blood culture, for example, may generate information about:
+
+- specimen collection and status
+- microbial growth
+- organism identification
+- antimicrobial susceptibility
+- preliminary and final results
+- comments or interpretive information
+
+Managing that information is part of **clinical microbiology informatics**.
+
+Clinical microbiology informatics applies information systems, data standards, computational tools, and workflow design to help microbiology information remain accurate, interpretable, and useful as it moves through the laboratory and into clinical care.
+
+> **Key idea:** Informatics is not simply the computer system. It includes the data, people, processes, interfaces, rules, and systems surrounding laboratory information.
+
+---
+
+## Learning Objectives
+
+By the end of this module, you should be able to:
+
+1. Describe the role of informatics in clinical microbiology.
+2. Explain why microbiology results can be more structurally complex than a single numeric laboratory result.
+3. Describe a simplified microbiology data lifecycle from the laboratory to the electronic health record.
+4. Distinguish the general roles of the laboratory information system and electronic health record.
+5. Explain why structured data, data quality, mappings, and fit-for-purpose terminology matter for interoperability and downstream use.
+6. Recognize the microbiology director's role in governing laboratory information.
+
+---
+
+## 1. Microbiology Results Are Data
+
+Consider two laboratory results.
+
+**Chemistry**
+
+> Potassium: 4.1 mmol/L
+
+**Microbiology**
+
+> Blood culture  
+> Organism identified  
+> Antimicrobial susceptibility results  
+> Preliminary and final result status  
+> Interpretive comments
+
+Both are laboratory information, but their structure is different.
+
+A microbiology result may contain multiple related observations that evolve over time.
+
+For example, a culture may progress from:
+
+    Specimen received
+          ↓
+    Culture in progress
+          ↓
+    Growth detected
+          ↓
+    Organism identified
+          ↓
+    Susceptibility testing
+          ↓
+    Final report
+
+Information generated at each stage must remain associated with the correct patient, specimen, organism, and test.
+
+This makes **data structure and relationships** especially important in microbiology. Identification, tracking, and routing are related but distinct: information can be correctly identified yet still reach the wrong destination or workflow because of a configuration or mapping problem. Audit trails and other provenance information can help reconstruct where information traveled and how it changed.
+
+---
+
+## 2. The Life of a Microbiology Result
+
+A useful way to understand laboratory informatics is to follow information through its lifecycle.
+
+Consider a simplified blood-culture workflow:
+
+    Patient / specimen
+           ↓
+    Microbiology instrument or workflow
+           ↓
+    Laboratory information system (LIS)
+           ↓
+    Interface / electronic message
+           ↓
+    Electronic health record (EHR)
+           ↓
+    Clinical team
+
+Each transition is an opportunity for information to be:
+
+- correctly transmitted
+- delayed
+- transformed
+- mapped incorrectly
+- displayed incorrectly
+- or lost
+
+An informatics problem can therefore occur even when the microbiology testing itself was performed correctly.
+
+<div className="micro-visual lifecycle-visual" role="img" aria-label="A microbiology result passes through laboratory and clinical systems while identity and meaning must be preserved">
+  <div className="micro-visual-copy"><small>Result lifecycle</small><strong>Every handoff is a checkpoint</strong><span>A correct analytical result can still fail downstream if identity, mapping, status, or display changes along the path.</span></div>
+  <div className="mini-path"><b>Specimen</b><i>→</i><b>Instrument</b><i>→</i><b>LIS</b><i>→</i><b>EHR</b><i>→</i><b>Action</b></div>
+</div>
+
+---
+
+## 3. LIS and EHR Are Not the Same System
+
+The **laboratory information system (LIS)** supports laboratory operations and manages information associated with laboratory testing.
+
+Depending on the local implementation, this may include information about:
+
+- orders
+- specimens
+- testing workflows
+- organism identification
+- susceptibility results
+- result status
+- verification
+- reporting
+
+The **electronic health record (EHR)** serves a broader clinical role. It brings together information used by clinicians across many areas of patient care.
+
+Laboratory results generated and managed within laboratory systems must therefore be transmitted so they can be appropriately represented in the EHR.
+
+This distinction becomes important when troubleshooting.
+
+If an organism identification is correct in the laboratory system but appears incorrectly in the EHR, repeating the microbiology test may not solve the problem.
+
+The error may instead involve the information pathway between systems.
+
+<div className="science-illustration lis-ehr-image" role="img" aria-label="Laboratory information system and electronic health record have different roles connected by an interface">
+  <div className="science-copy"><small>System roles</small><strong>LIS and EHR are connected, not interchangeable</strong><span>The LIS manages laboratory workflow and result state; the EHR presents laboratory information in the broader clinical record.</span></div>
+  <div className="system-role-art"><div><b>LIS</b><span>specimen</span><span>result</span><span>verification</span></div><em>interface →</em><div><b>EHR</b><span>clinical display</span><span>context</span><span>action</span></div></div>
+</div>
+
+---
+
+## 4. Moving Data Is Not the Same as Preserving Meaning
+
+Imagine that a microbiology laboratory uses the local code:
+
+    ORG_247
+
+to represent a particular organism.
+
+The laboratory system understands the code.
+
+The receiving system successfully receives the electronic message—but does not know what `ORG_247` means.
+
+<div className="science-illustration mapping-image" role="img" aria-label="Different system identifiers map to the same Escherichia coli concept">
+  <div className="science-copy"><small>Concept mapping</small><strong>Same organism, different representations</strong><span>The clinical concept must survive translation even when each system stores a different identifier.</span></div>
+  <div className="concept-map-flow">
+    <div className="organism-anchor"><span className="clean-bacterium"/><b><i>Escherichia coli</i></b><small>same organism</small></div><em>→</em>
+    <div className="map-code"><small>INTERNAL ID</small><b>ORG_247</b></div>
+    <div className="map-code"><small>LIS CODE</small><b>ECOLI_LIS</b></div>
+    <div className="map-code"><small>DISPLAY NAME</small><b><i>E. coli</i></b></div>
+  </div>
+</div>
+
+Technically, the message arrived.
+
+Semantically, the information failed.
+
+This illustrates an important distinction:
+
+**Syntactic interoperability** concerns whether systems can exchange information in an expected structure or format.
+
+**Semantic interoperability** concerns whether the receiving system can preserve and interpret the meaning of that information.
+
+<div className="micro-visual syntax-semantics-visual" role="img" aria-label="Usable interoperability requires both valid message structure and preserved clinical meaning">
+ <div className="micro-visual-copy"><small>Two layers</small><strong>Structure can survive while meaning fails</strong><span>Syntactic interoperability asks whether the message is exchanged in the expected form; semantic interoperability asks whether the receiving system interprets the intended concept.</span></div>
+ <div className="interop-flow">
+   <div><small>SYNTACTIC · STRUCTURE</small><b>Message arrives correctly</b><span>expected format · required fields · valid syntax</span></div>
+   <em>+</em>
+   <div><small>SEMANTIC · MEANING</small><b>Concept is understood correctly</b><span>appropriate mapping · intended clinical meaning</span></div>
+   <em>→</em>
+   <strong>Usable data</strong>
+ </div>
+</div>
+
+### The microbiologist sees a name; the interface may rely on a code
+
+An instrument, middleware application, LIS, and EHR do not necessarily use the same local identifiers or display labels for an organism. A laboratory professional may readily recognize labels such as `E. coli` and `Escherichia coli` as referring to the same organism, but an information system should not depend on human recognition of similar text strings.
+
+A simplified pathway might look like:
+
+    Instrument organism concept / local identifier
+                    ↓
+          Interface or middleware mapping
+                    ↓
+              LIS organism concept
+                    ↓
+                Displayed result
+
+The exact implementation varies by system. The important point is that **mappings connect representations used by different systems**. If a required mapping is absent, incorrect, or more or less specific than the source concept, the downstream result may require exception handling or may be represented incorrectly even though the organism identification itself was correct.
+
+This also matters when two labels are related but not equivalent. For example, a genus-level identification such as `Staphylococcus spp.` does not communicate the same specificity as a species-level identification. Informatics should preserve the level of identification actually established by the laboratory rather than infer greater specificity from a similar-looking name.
+
+For clinicians, this is not merely a coding problem. They act on the result that reaches the clinical record. A technically successful interface can therefore still create confusion or inappropriate assumptions if the downstream representation changes the meaning, specificity, status, or context of the laboratory finding.
+
+Standardized terminologies can help systems represent laboratory concepts consistently. For example, LOINC provides standardized identifiers for laboratory observations, including microbiology observations. Other terminology systems may be used for coded result concepts such as microorganisms. These systems serve different purposes and should not be treated as interchangeable dictionaries.
+
+The important principle is not memorizing terminology systems.
+
+It is understanding that:
+
+> **Electronic exchange is successful only when the receiving system can correctly interpret the information being exchanged.**
+
+---
+
+## 5. Structured and Unstructured Information
+
+Laboratory information can be represented in different ways.
+
+Consider:
+
+    Organism: Escherichia coli
+
+stored in a defined organism field.
+
+Compare that with:
+
+    Culture grew E. coli.
+
+stored only as free text.
+
+Both may be understandable to a person.
+
+However, structured information is generally easier for computer systems to:
+
+- search
+- compare
+- validate
+- exchange
+- analyze
+- use in decision support
+- use for surveillance
+
+Free text remains useful when information cannot be adequately represented using structured fields.
+
+The informatics challenge is determining **which information should be structured, how it should be represented, and how its meaning should be preserved across systems.** The terminology or representation chosen should also be fit for its intended purpose and preserve the appropriate context and granularity.
+
+---
+
+## 6. Data Quality Comes Before the Calculation
+
+Informatics is not only about moving individual results. Laboratory data are also reused for dashboards, quality improvement, surveillance, decision support, and research.
+
+Before interpreting an analysis, ask whether the underlying data are fit for the question. Important considerations include:
+
+- **population:** which patients, specimens, sites, or workflows are represented?
+- **provenance:** where did the data originate and what transformations occurred?
+- **completeness:** are expected records or fields missing?
+- **denominator:** what population is actually being used to calculate the measure?
+- **meaning and mappings:** did codes, definitions, or system configurations change over time?
+
+A calculation can be technically correct and still support a misleading conclusion.
+
+<div className="science-illustration provenance-image" role="img" aria-label="Incomplete source data changes a downstream chart"><div className="science-copy"><small>Data fitness</small><strong>A clean chart can begin with incomplete data</strong><span>Inspect what entered the dataset, what was transformed, and what may be missing before interpreting the output.</span></div><div className="provenance-art"><div><i/><i/><i/><i className="missing"/><i/><i/></div><em>→</em><span className="mini-chart"><b/><b/><b/><b/></span></div></div>
+
+For example, suppose a dashboard shows that blood-culture positivity decreased after an interface change. The percentage may be calculated correctly, but the apparent trend could still be misleading if a subset of cultures stopped reaching the dataset or a local code changed without an appropriate mapping update.
+
+> **Key idea:** Verify the fitness of the source data before interpreting the result of the calculation.
+
+---
+
+## 7. The Microbiology Director's Informatics Role
+
+Clinical microbiology directors do not need to personally build every interface or write every software application.
+
+They do need to understand how information affects laboratory practice.
+
+A director may need to help determine:
+
+- what information should be reported
+- how results should be represented
+- whether mappings preserve clinical meaning
+- how new interfaces or workflows should be validated
+- how errors should be investigated
+- how software or rule changes should be governed
+- whether information displayed to clinicians accurately reflects laboratory findings
+- whether data are sufficiently complete, interpretable, and fit for a proposed analytical or surveillance use
+
+This requires collaboration with laboratory scientists, LIS teams, interface specialists, clinicians, infection prevention teams, public-health partners, and other informatics professionals.
+
+The director contributes something particularly important to that collaboration:
+
+**clinical microbiology expertise.**
+
+---
+
+## Putting It Together
+
+Clinical microbiology informatics connects:
+
+<div className="putting-system" role="img" aria-label="Data, systems, meaning, and workflow converge into actionable microbiology information">
+  <div><strong>DATA</strong><span>What information are we generating, and is it fit for use?</span></div>
+  <div><strong>SYSTEMS</strong><span>Where is that information stored, mapped, and transmitted?</span></div>
+  <div><strong>MEANING</strong><span>Does the information still mean the same thing downstream?</span></div>
+  <div><strong>WORKFLOW</strong><span>How will people and systems use it?</span></div>
+  <p><span>↓</span><strong>ACTIONABLE MICROBIOLOGY INFORMATION</strong></p>
+</div>
+
+Later modules will examine individual parts of this system in greater depth:
+
+- antimicrobial susceptibility and decision support
+- instrumentation, interfaces, and automation
+- microbial genomics and bioinformatics
+- digital microbiology
+- public-health reporting and surveillance
+
+For now, remember the central principle:
+
+> **A microbiology result is not useful merely because it was generated. Its identity, context, relationships, and meaning must survive the journey from the laboratory to the people and systems that use it.**
+
+---
