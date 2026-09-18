@@ -1,0 +1,78 @@
+# Debrief
+
+## Case: The Interface Is Working — So What Went Wrong?
+
+Your laboratory recently updated the organism mapping table used between a microbiology identification instrument and the LIS.
+
+Several days later, a technologist notices that an organism identification displayed in the LIS does not match the identification shown on the instrument. The interface is online, messages are transmitting successfully, and no obvious connection errors have been reported.
+
+### Work Through the Problem
+
+Before assuming that the instrument produced an incorrect identification, trace the information pathway:
+
+**Instrument → interface or middleware → LIS → EHR**
+
+Ask:
+
+1. What organism identification and source code did the instrument actually generate?
+2. How was that code translated by the interface or middleware?
+3. What organism concept did the LIS store?
+4. What ultimately appeared in the clinician-facing report?
+5. Were any mapping or configuration changes made recently?
+6. Could other organisms or workflows depend on the same changed mapping?
+
+The key distinction is between **analytical correctness** and **information integrity**.
+
+If the instrument generated the intended identification but a translation table mapped its code to the wrong LIS concept, the analytical result may be correct even though the downstream report is not.
+
+---
+
+## What Should Happen Next?
+
+Correcting the single affected result is not enough.
+
+Because the mapping table changed, the laboratory should consider the **scope of the change** and determine what else could have been affected. That may include reviewing other results that used the mapping, correcting affected reports when appropriate, and verifying representative results through the downstream workflow.
+
+This illustrates why change control and validation are closely connected.
+
+A configuration change can alter patient information without causing an interface to stop transmitting.
+
+---
+
+## Now Add Downtime
+
+Imagine that during the investigation the interface becomes unavailable for several hours. Results are entered manually until connectivity is restored.
+
+When the interface reconnects, the problem is not necessarily over.
+
+The laboratory may need to determine:
+
+- which results were generated during downtime
+- which were manually entered
+- whether queued results subsequently transmitted
+- whether duplicate or missing results were created
+- whether corrected or preliminary results require review
+- whether physical specimen or culture status still matches the electronic record
+
+**Restoration** means the technical service is available again.
+
+**Reconciliation** means the affected information and workflows have been reviewed sufficiently to establish that normal operation can safely resume.
+
+---
+
+## Director-Level Reasoning
+
+The microbiology director does not need to personally rewrite the interface or mapping table.
+
+The director does need to help answer questions such as:
+
+- What is the clinical risk?
+- Which parts of the workflow may be affected?
+- What evidence is needed to verify the correction?
+- Does the investigation need to extend to previously reported results?
+- Who needs to participate in the investigation?
+- When is the system ready to return to routine clinical use?
+
+The same reasoning applies beyond traditional instrument interfaces. A MALDI-TOF database update, molecular-panel reporting configuration, middleware rule change, or automation-system modification can affect the clinical workflow even when the underlying hardware has not changed.
+
+> **Debrief takeaway:** When a microbiology information problem occurs, do not stop at “Is the instrument working?” or “Is the interface connected?” Trace the information, define the scope of the problem, evaluate downstream consequences, and verify that the complete affected workflow is functioning as intended.
