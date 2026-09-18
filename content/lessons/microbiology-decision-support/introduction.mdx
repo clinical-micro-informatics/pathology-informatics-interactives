@@ -1,0 +1,322 @@
+# AST Informatics & Antimicrobial Decision Support
+
+## Why AST Is an Informatics Problem
+
+Antimicrobial susceptibility testing (AST) does more than generate a laboratory measurement.
+
+A susceptibility result may involve:
+
+- an organism identification
+- an antimicrobial agent
+- an MIC or other susceptibility measurement
+- interpretive criteria
+- a categorical interpretation
+- expert rules or laboratory policies
+- comments, suppression rules, or alerts
+- downstream reporting to the LIS and EHR
+
+These pieces of information must remain correctly associated as the result moves through laboratory systems.
+
+> **Key idea:** The analytical measurement and the reported interpretation are related, but they are not the same thing.
+
+---
+
+## Learning Objectives
+
+By the end of this module, you should be able to:
+
+1. Distinguish an MIC from its categorical susceptibility interpretation.
+2. Explain how breakpoints and expected phenotypes contribute to AST interpretation.
+3. Distinguish standards-based knowledge, vendor-implemented rules, and locally governed laboratory or stewardship policies.
+4. Trace an AST result through expert logic, laboratory information systems, interfaces, reporting rules, and downstream clinical decision support.
+5. Explain how configuration changes can affect multiple dependent components of an AST information pathway.
+6. Distinguish an individual isolate's AST result from an antibiogram and identify informatics factors that affect cumulative susceptibility data.
+7. Explain why AST configurations and decision-support interventions require validation, governance, monitoring, and change control.
+
+---
+
+## 1. From Measurement to Interpretation
+
+Consider a simplified AST workflow:
+
+    Organism + antimicrobial
+              ↓
+         AST measurement
+              ↓
+             MIC
+              ↓
+      Interpretive criteria
+              ↓
+    Categorical interpretation
+              ↓
+        Laboratory report
+
+The **minimum inhibitory concentration (MIC)** is an in vitro measurement generated under defined testing conditions.
+
+The MIC itself is not the categorical interpretation.
+
+<div className="science-illustration mic-image" role="img" aria-label="Serial antimicrobial concentrations produce a measured MIC before interpretation"><div className="science-copy"><small>MIC</small><strong>Measurement first. Interpretation second.</strong><span>The dilution series produces an analytical value. Breakpoint criteria are a separate knowledge layer applied afterward.</span></div><div className="dilution-art"><span/><span/><span/><span className="clear mic-well"><b>MIC</b></span><span className="clear"/></div></div>
+
+Interpretive criteria, commonly called **breakpoints**, are applied to susceptibility measurements to determine how the result should be categorized for the relevant organism-antimicrobial combination.
+
+This distinction matters in informatics because the measurement and the interpretation may be stored, processed, or transmitted as separate data elements.
+
+---
+
+## 2. Breakpoints Are Maintained Knowledge
+
+Imagine that an isolate has an MIC of:
+
+    2 µg/mL
+
+The laboratory later implements updated breakpoint criteria for that organism-antimicrobial combination.
+
+The measured MIC has not changed.
+
+<div className="micro-visual breakpoint-visual" role="img" aria-label="The same measured MIC is interpreted once using an older breakpoint set and again using an updated breakpoint set, producing different categorical interpretations">
+  <div className="micro-visual-copy"><small>Measurement ≠ interpretation</small><strong>Same MIC. Different breakpoint set.</strong><span>The measured MIC stays fixed. What changes is the breakpoint knowledge applied to that value.</span></div>
+  <div className="breakpoint-compare">
+    <div className="fixed-mic"><small>MEASURED MIC</small><b>2 µg/mL</b><em>unchanged</em></div>
+    <div className="interpret-branches">
+      <div><span><small>OLDER BREAKPOINT SET</small><b>Version A</b></span><i>→</i><strong>Category A</strong></div>
+      <div><span><small>UPDATED BREAKPOINT SET</small><b>Version B</b></span><i>→</i><strong>Category B</strong></div>
+    </div>
+  </div>
+</div>
+
+However, its categorical interpretation may change because the criteria used to interpret the measurement have changed.
+
+Therefore, an AST information system must know more than the MIC.
+
+It may also need to know:
+
+- the organism
+- the antimicrobial
+- the testing method
+- the applicable interpretive criteria
+- the version or configuration of those criteria
+- relevant laboratory reporting rules
+
+> **Informatics principle:** A stable analytical value can produce a different interpretation when the knowledge used to interpret it changes.
+
+This makes breakpoint implementation a **configuration, validation, and change-control problem** as well as a microbiology problem.
+
+---
+
+## 3. Expert Rules
+
+AST systems may apply additional knowledge-based logic to susceptibility data.
+
+These rules may be implemented within an AST instrument, middleware, the LIS, or another component of the laboratory workflow.
+
+Depending on the validated system and laboratory policy, an expert rule may:
+
+- flag an unusual susceptibility pattern
+- identify potentially inconsistent results
+- suppress selected results
+- modify how a result is reported
+- prompt additional review or testing
+
+Expert rules can improve consistency, but they do not eliminate the need for microbiology expertise.
+
+<div className="science-illustration expert-rule-image" role="img" aria-label="An unusual organism drug phenotype triggers an expert rule flag and human review">
+ <div className="science-copy"><small>Expert rules</small><strong>Rules surface exceptions; experts resolve them</strong><span>A configured rule can detect a result pattern that deserves attention, but the laboratory still determines the appropriate verification and reporting response.</span></div>
+ <div className="expert-rule-art"><span className="result-pair"><b>organism</b><b>AST pattern</b></span><em>→</em><span className="rule-diamond">!</span><em>→</em><span className="review-node">review</span></div>
+</div>
+
+Expert rules may also incorporate knowledge about **expected phenotypes** for particular organism-antimicrobial combinations. These are susceptibility patterns that are expected based on established microbiologic knowledge and can help identify results that deserve additional review.
+
+For example, EUCAST identifies *Klebsiella pneumoniae* and ampicillin as an expected resistant phenotype. A susceptibility result that contradicts an expected phenotype should therefore prompt review rather than being accepted automatically.
+
+The term **intrinsic resistance** has historically been used for some of these organism-drug relationships and remains common in microbiology. EUCAST now uses the terminology **expected resistant phenotype** and **expected susceptible phenotype**, emphasizing the expected AST result rather than assuming a single underlying resistance mechanism.
+
+A rule can also create an error if it is:
+
+- outdated
+- configured incorrectly
+- applied to the wrong organism or antimicrobial
+- mapped incorrectly between systems
+- changed without appropriate validation
+
+### Where Do AST Rules Come From?
+
+Not all AST logic comes from the same source.
+
+Some logic reflects **published susceptibility standards and microbiologic knowledge**, such as breakpoints and expected phenotypes. Some is implemented through **vendor-configured instrument or software rules**. Other decisions reflect **local laboratory and antimicrobial-stewardship policy**, such as which results are routinely reported, selectively reported, suppressed, or accompanied by comments.
+
+These layers should not be treated as interchangeable.
+
+For example, a local antibiogram can inform antimicrobial stewardship and empiric-treatment strategies, but it does not by itself redefine the breakpoint used to interpret an individual isolate's MIC.
+
+Similarly, an antimicrobial may be tested by the laboratory but intentionally not displayed on the routine clinical report because of a validated selective or cascade-reporting policy.
+
+> **Informatics principle:** A laboratory should know where an AST rule comes from, where it is implemented, who governs it, and how it changes the information ultimately presented to clinicians.
+
+This means that implementing a change may require coordinated updates across more than one component, such as the AST instrument, expert system, middleware, LIS, reporting rules, or downstream clinical decision support.
+
+---
+
+## 4. Following an AST Result Through the System
+
+A simplified electronic AST pathway might look like:
+
+    AST instrument
+          ↓
+    Breakpoint / expert logic
+          ↓
+    Middleware or LIS
+          ↓
+    Interface
+          ↓
+    EHR
+          ↓
+    Clinical team
+
+Suppose the instrument generates the correct MIC, but the EHR displays the wrong susceptibility category.
+
+Repeating the MIC may not identify the problem.
+
+The investigation should also consider:
+
+- which breakpoint criteria were applied
+- where the categorical interpretation was generated
+- whether an expert rule modified the result
+- whether organism or antimicrobial mappings were correct
+- whether an interface transformed the result
+- whether the LIS and EHR displayed the intended interpretation
+
+This is an example of an **informatics discrepancy** rather than necessarily an analytical AST failure.
+
+<div className="science-illustration ast-path-image" role="img" aria-label="An MIC moves through interpretation rules, laboratory systems, and the EHR before clinical display">
+  <div className="science-copy"><small>AST result lineage</small><strong>A correct MIC can still become a wrong displayed category</strong><span>Troubleshooting follows the result through interpretation, rules, mappings, interfaces, and display rather than automatically repeating the measurement.</span></div>
+  <div className="ast-path-art"><span><b>MIC</b><small>measurement</small></span><i>→</i><span><b>S / I / R</b><small>breakpoint + rules</small></span><i>→</i><span><b>LIS</b><small>mapping</small></span><i>→</i><span><b>EHR</b><small>display</small></span></div>
+</div>
+
+### AST Configuration as a Dependency Network
+
+The same principle applies when the laboratory intentionally changes its AST configuration.
+
+For example, implementing updated breakpoints may affect more than one location in the information pathway. Depending on the local architecture, the laboratory may need to evaluate:
+
+- breakpoint configuration in the AST system
+- expert rules and expected-phenotype logic
+- selective or cascade-reporting rules
+- organism and antimicrobial mappings
+- middleware or LIS configuration
+- comments or interpretive text
+- downstream clinical decision support
+
+A change can therefore be correct in one component while the overall workflow remains inconsistent.
+
+> **Informatics principle:** When one component of an AST workflow changes, identify the systems and rules that depend on it, then verify the affected pathway end to end.
+
+### AST and Clinical Decision Support
+
+Decision support does not have to mean a pop-up alert.
+
+In antimicrobial workflows, decision support may include:
+
+- selective or cascade reporting
+- interpretive comments
+- reflex or protocol-based actions
+- guidance presented with laboratory results
+- targeted alerts when a result requires timely attention
+
+The effectiveness of decision support depends not only on whether the underlying rule is technically correct, but also on **when, where, and to whom the information is presented**.
+
+A technically accurate alert may provide little value if it appears too often, reaches the wrong user, interrupts the wrong part of the workflow, or does not lead to an actionable decision.
+
+For this reason, clinical decision support should be treated as a **governed sociotechnical system**. Laboratories and clinical partners should define its intended purpose, monitor how it performs in practice, investigate unintended consequences, and modify or retire interventions that no longer provide the intended value.
+
+> **Informatics principle:** Effective decision support delivers appropriate information to the appropriate person at an actionable point in the workflow.
+
+---
+
+## 5. Individual AST Results and Antibiograms
+
+An individual AST report describes susceptibility information for a particular isolate.
+
+An **antibiogram** summarizes susceptibility patterns across a defined collection of isolates.
+
+<div className="science-illustration antibiogram-image" role="img" aria-label="Qualifying isolate results pass through inclusion and deduplication rules before becoming cumulative susceptibility percentages">
+  <div className="science-copy"><small>Aggregation</small><strong>An antibiogram is a governed population summary</strong><span>The percentage is not a simple pile of results. Eligibility, duplicate-isolate handling, organism identity, antimicrobial mapping, and the analysis period determine what enters the denominator.</span></div>
+  <div className="aggregation-flow">
+    <div className="isolate-set"><small>ISOLATE RESULTS</small><span><i/><i/><i/><i/><i/><i/></span></div>
+    <em>→</em>
+    <div className="aggregation-rules"><small>APPLY RULES</small><b>eligible isolates</b><b>deduplication</b><b>defined period</b></div>
+    <em>→</em>
+    <div className="summary-bars"><small>CUMULATIVE % SUSCEPTIBLE</small><span><i style={{height:"72%"}}/><i style={{height:"48%"}}/><i style={{height:"86%"}}/></span></div>
+  </div>
+</div>
+
+These serve different purposes.
+
+Individual AST:
+
+    Patient
+       ↓
+    Isolate
+       ↓
+    Organism-antimicrobial results
+       ↓
+    Clinical report
+
+Antibiogram:
+
+    Many qualifying isolates
+             ↓
+    Defined inclusion and analysis rules
+             ↓
+    Aggregated susceptibility data
+             ↓
+    Local susceptibility summary
+
+Because antibiograms depend on aggregated laboratory data, their accuracy also depends on informatics.
+
+Organism identification, antimicrobial results, duplicate-isolate handling, inclusion criteria, and data extraction must be represented and processed appropriately.
+
+---
+
+## 6. Governance Matters
+
+AST knowledge does not remain static.
+
+<div className="micro-visual governance-loop-visual" role="img" aria-label="AST governance cycles through standards review, configuration, validation, deployment, and monitoring">
+ <div className="micro-visual-copy"><small>Change governance</small><strong>An AST update is a controlled cycle</strong><span>Updated knowledge must be reviewed, configured, validated, deployed, and monitored across the systems that use it.</span></div>
+ <div className="governance-loop-art"><span>standard</span><i>→</i><span>configure</span><i>→</i><span>validate</span><i>→</i><span>monitor</span><b>↺</b></div>
+</div>
+
+Interpretive standards, laboratory policies, software, mappings, and expert-system configurations can change.
+
+Laboratories therefore need defined processes for:
+
+- reviewing relevant updates
+- determining whether a change applies locally
+- configuring laboratory systems
+- validating changes before clinical use
+- documenting implementation
+- monitoring downstream reporting
+- investigating unexpected results
+
+Vendor defaults should not be assumed to remain appropriate indefinitely.
+
+The laboratory retains responsibility for ensuring that the AST information it reports is appropriate for its validated workflow.
+
+---
+
+## The Microbiology Director's Role
+
+A microbiology director does not need to personally program every expert rule or interface.
+
+The director should understand enough of the AST information pathway to ask:
+
+- Where was this interpretation generated?
+- Which breakpoint or rule was applied?
+- Is the organism-antimicrobial mapping correct?
+- Did another system modify the result?
+- Was the configuration validated?
+- What changed since the last known correct result?
+
+This is where microbiology expertise and informatics governance intersect.
+
+---
