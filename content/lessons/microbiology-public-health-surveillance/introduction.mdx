@@ -1,0 +1,237 @@
+# Public Health Surveillance and Microbiology Data Exchange
+
+Clinical microbiology laboratories generate information that may be important beyond the care of an individual patient. Organism identification, antimicrobial resistance patterns, molecular results, and genomic data can contribute to public-health surveillance, case investigation, outbreak detection, and response.
+
+For these data to be useful across institutions and jurisdictions, information must move between systems while preserving its meaning. Public-health reporting is therefore both a microbiology workflow and an **interoperability problem**.
+
+## Learning Objectives
+
+By the end of this lesson, you should be able to:
+
+- describe the role of electronic laboratory reporting (ELR) in public-health surveillance
+- distinguish technical message exchange from semantic interoperability
+- explain why successful message transmission or acknowledgment does not by itself establish correct interpretation
+- explain the complementary roles of messaging standards and standardized terminology
+- describe how LOINC and SNOMED CT can support standardized representation of laboratory information
+- distinguish electronic laboratory reporting (ELR) from electronic case reporting (eCR)
+- identify important considerations for end-to-end validation of public-health data exchange
+- explain why reporting rules, terminology mappings, and interfaces require ongoing governance
+
+## From the Microbiology Laboratory to Public Health
+
+A simplified public-health reporting workflow may look like:
+
+**Microbiology result → LIS → reporting logic → ELR interface → public-health system → surveillance or response**
+
+At each step, information must remain associated with the correct patient, specimen, test, organism, and result.
+
+The workflow may also need to determine whether a result meets applicable reporting requirements and which public-health destination should receive the information.
+
+Reporting requirements can vary by jurisdiction and may change over time. Laboratories therefore need processes for maintaining reporting logic rather than assuming that a configuration will remain correct indefinitely.
+
+## Electronic Laboratory Reporting
+
+**Electronic laboratory reporting (ELR)** supports automated transmission of laboratory information to public-health agencies.
+
+<div className="science-illustration elr-image" role="img" aria-label="Laboratory report encoded into a structured message and delivered to public health"><div className="science-copy"><small>ELR</small><strong>The result becomes a structured public-health message</strong><span>Selection, terminology, message structure, routing, and receiving-system interpretation sit between the LIS and surveillance use.</span></div><div className="elr-art"><span className="lab-building"/><em>→</em><span className="message-sheet"><i/><i/><i/><i/></span><em>→</em><span className="network-nodes"><i/><i/><i/><i/></span></div></div>
+
+Compared with workflows that depend heavily on manual reporting, structured electronic reporting can improve the timeliness and consistency with which laboratory information becomes available for surveillance and public-health response.
+
+However, automation introduces its own informatics responsibilities.
+
+The laboratory must ensure that:
+
+- the appropriate information is selected for reporting
+- patient and specimen information is represented correctly
+- tests and results are mapped appropriately
+- messages are sent to the intended destination
+- receiving systems can interpret the transmitted information
+- changes to reporting requirements or technical specifications are maintained
+
+> **Automating an incorrect reporting rule simply allows the error to occur more efficiently.**
+
+## Messaging Standards and Terminology Standards
+
+Electronic reporting requires systems to agree on both **how information is exchanged** and **what the information means**.
+
+Messaging standards such as **HL7 (Health Level Seven)** provide frameworks for structuring and exchanging healthcare information between systems.
+
+<div className="science-illustration semantics-image" role="img" aria-label="Message structure carries coded laboratory concepts whose meaning depends on standardized terminology">
+ <div className="science-copy"><small>Structure + semantics</small><strong>The envelope and the meaning are different layers</strong><span>A messaging standard organizes exchange; terminology systems help represent what the test, organism, or result means.</span></div>
+ <div className="semantics-art"><div className="message-frame"><i/><i/><i/></div><b>+</b><div className="concept-tags"><span>test</span><span>organism</span><span>result</span></div></div>
+</div>
+
+Learners do not need to construct HL7 messages for this lesson; the important concept is that message structure and transport are distinct from the clinical meaning carried within the message.
+
+Terminology standards address a different problem: representing clinical concepts consistently.
+
+For laboratory data, examples include:
+
+- **LOINC**, commonly used to identify laboratory tests and observations
+- **SNOMED CT**, which can represent coded clinical concepts, including organisms and other result concepts depending on the implementation
+
+These standards are complementary.
+
+A message can conform to an expected structure while still contain an incorrect or poorly mapped laboratory concept.
+
+> **A correctly formatted message can still communicate the wrong meaning.**
+
+## Local Codes and Semantic Interoperability
+
+Clinical laboratories often maintain local codes for tests, organisms, specimens, and other concepts.
+
+Imagine that the LIS represents an organism using:
+
+`ORG_247`
+
+The laboratory understands this code.
+
+If the public-health system receives `ORG_247` but cannot determine which organism it represents, the electronic message may have been delivered successfully while the meaning of the result was lost.
+
+Controlled mapping between local concepts and standardized or receiving-system representations is therefore an important part of interoperability.
+
+This is **semantic interoperability**: ensuring that information retains an interpretable meaning when exchanged between systems.
+
+## Receipt Does Not Prove Correct Interpretation
+
+Electronic systems may return acknowledgments indicating that a message was received or processed at a particular technical stage.
+
+That information can be useful for monitoring interfaces.
+
+However, successful message delivery does not by itself establish that every transmitted laboratory concept was interpreted correctly.
+
+For example, a message could reach the receiving system while containing:
+
+- an incorrect test mapping
+- an incorrect organism code
+- an inappropriate specimen representation
+- an incorrect result value
+- missing required information
+
+End-to-end validation should therefore evaluate the information as it is received and used, not simply confirm that a message left the laboratory.
+
+<div className="micro-visual ack-visual" role="img" aria-label="A technical acknowledgment confirms message receipt but does not by itself confirm correct semantic interpretation">
+ <div className="micro-visual-copy"><small>Acknowledgment ≠ interpretation</small><strong>“Received” is not the same as “understood correctly”</strong><span>An acknowledgment can establish a technical processing event while a test, organism, specimen, or result mapping is still wrong.</span></div>
+ <div className="ack-art"><span><b>message</b></span><i>→</i><span className="ack-ok"><b>ACK ✓</b><small>received</small></span><i>≠</i><span><b>meaning ✓?</b><small>validate</small></span></div>
+</div>
+
+## ELR and eCR Are Related but Different
+
+Electronic laboratory reporting is one component of the broader public-health information environment.
+
+**ELR** primarily communicates laboratory information from laboratories to public-health agencies.
+
+**Electronic case reporting (eCR)** supports automated transmission of reportable case information from electronic health records to public-health agencies.
+
+The two workflows can provide complementary information.
+
+<div className="science-illustration elr-ecr-split-image" role="img" aria-label="ELR carries laboratory results while eCR carries reportable case information to public health">
+  <div className="science-copy"><small>Public-health data flows</small><strong>ELR and eCR answer different reporting needs</strong><span>Laboratory reporting contributes test and result information; case reporting contributes broader clinical and demographic context. Both can reach public health.</span></div>
+  <div className="split-flow-art"><div><b>Laboratory</b><span>test · organism · result</span><strong>ELR</strong></div><i>→</i><em>PUBLIC<br/>HEALTH</em><i>←</i><div><b>EHR</b><span>case · clinical context</span><strong>eCR</strong></div></div>
+</div>
+
+A laboratory result may contribute important microbiologic evidence, while case reporting can provide additional clinical and demographic information relevant to public-health investigation.
+
+Understanding the distinction helps laboratory leaders recognize where microbiology data fit within the larger surveillance ecosystem.
+
+## Public-Health Surveillance
+
+Once laboratory information reaches public-health systems, it can contribute to activities such as:
+
+- disease surveillance
+- case investigation
+- outbreak detection
+- antimicrobial-resistance surveillance
+- monitoring of emerging pathogens
+- evaluation of geographic or temporal trends
+
+Genomic information can also contribute to public-health surveillance and outbreak investigation, linking this module to the microbial genomics concepts introduced earlier in the curriculum.
+
+Genomic similarity can help identify isolates or cases that may warrant investigation, but genomic relatedness should not be treated as proof of direct transmission. Interpretation may also require epidemiologic, temporal, geographic, and other relevant context.
+
+The value of these systems depends on the quality and interpretability of the underlying data.
+
+Poor mappings, incomplete information, duplicate records, delayed reporting, or incorrect reporting logic can reduce the usefulness of surveillance even when the laboratory's analytical result itself was correct.
+
+### Before Interpreting a Surveillance Signal, Check the Data Pipeline
+
+An apparent change in surveillance data does not necessarily represent a change in underlying disease occurrence.
+
+<div className="micro-visual surveillance-signal-visual" role="img" aria-label="A rise in surveillance counts can reflect a true epidemiologic change or a change in the data pipeline">
+ <div className="micro-visual-copy"><small>Signal interpretation</small><strong>A rising line has more than one possible cause</strong><span>Before calling an epidemiologic signal, check whether methods, mappings, reporting rules, completeness, or deduplication changed.</span></div>
+ <div className="signal-art"><div className="signal-chart"><i/><i/><i/><i/><i/></div><em>?</em><div><b>true change</b><b>pipeline change</b></div></div>
+</div>
+
+For example, an increase in a reported organism could reflect a true epidemiologic signal, but it could also follow changes in:
+
+- organism or test mappings
+- laboratory methods or test availability
+- reporting rules
+- inclusion or deduplication logic
+- data completeness
+- interface or receiving-system behavior
+
+A useful informatics habit is therefore to ask whether something changed in the laboratory or information pipeline before interpreting a new pattern as biological or epidemiologic.
+
+> **A change in the data does not necessarily mean a change in the biology.**
+
+## Validation of Public-Health Data Exchange
+
+Validation should follow the information across the intended reporting workflow.
+
+Depending on the implementation, this may include evaluation of:
+
+- representative reportable results
+- patient and specimen information
+- local-to-standard terminology mappings
+- message structure
+- reporting rules
+- destination routing
+- acknowledgments and error handling
+- receiving-system interpretation
+- corrections or amended results
+- relevant exception scenarios
+
+The goal is not simply to demonstrate that the interface can send a message.
+
+The goal is to establish that the **appropriate information reaches the appropriate public-health system with its intended meaning preserved**.
+
+<div className="micro-visual public-health-mini-visual" role="img" aria-label="Laboratory result moves through reporting logic to public health while meaning is preserved">
+  <div className="micro-visual-copy"><small>End-to-end reporting</small><strong>Received is not the same as understood</strong><span>Validation follows both delivery and semantic interpretation from the LIS through reporting logic to the receiving public-health system.</span></div>
+  <div className="mini-path"><b>LIS</b><i>→</i><b>Report rule</b><i>→</i><b>ELR</b><i>→</i><b>Public health</b></div>
+</div>
+
+## Governance and Change Control
+
+Public-health reporting systems require ongoing maintenance.
+
+Changes may occur in:
+
+- reporting requirements
+- laboratory tests
+- organism terminology
+- standardized vocabularies
+- message implementation guidance
+- local mappings
+- interface software
+- receiving-system requirements
+
+A previously validated workflow can therefore become incorrect if its underlying rules or mappings are not maintained.
+
+Laboratories should have defined ownership and change-control processes for evaluating, testing, documenting, and monitoring relevant changes.
+
+## The Microbiology Director's Role
+
+The microbiology director does not need to personally construct HL7 messages or maintain every interface.
+
+The director should understand enough of the workflow to evaluate:
+
+- which microbiology information may require reporting
+- how laboratory concepts are represented
+- whether mappings preserve microbiologic meaning
+- how reporting workflows are validated
+- how exceptions and reporting failures are investigated
+- how changes to tests or reporting rules may affect downstream systems
+- how laboratory information contributes to surveillance and outbreak response
+
+This work often requires collaboration among microbiology, laboratory informatics, infection prevention, epidemiology, information technology, and public-health partners.
